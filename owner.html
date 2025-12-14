@@ -2,183 +2,51 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Owner Dashboard - Live Stream</title>
-
-<style>
-body { margin:0; font-family:Arial,sans-serif; background:#1a1a1a; color:#fff; }
-#loginBox { text-align:center; margin-top:50px; }
-#ownerPanel { display:none; padding:20px; max-width:900px; margin:auto; }
-input, button { padding:10px; margin:5px; border-radius:5px; border:none; }
-button { background:#4caf50; color:#fff; cursor:pointer; }
-.video-wrapper { position:relative; width:100%; aspect-ratio:16/9; background:black; border-radius:12px; overflow:hidden; margin-top:15px; }
-.bg-media { position:absolute; width:100%; height:100%; object-fit:cover; display:none; }
-#liveVideo { position:absolute; bottom:10px; right:10px; width:25%; border:2px solid #4caf50; border-radius:8px; background:black; }
-.title-bar { position:absolute; top:0; width:100%; height:35px; background:rgba(0,0,0,.7); display:flex; align-items:center; overflow:hidden; }
-#programTitle { padding-left:100%; white-space:nowrap; animation:scroll 15s linear infinite; color:#b7ffb7; font-weight:bold; }
-@keyframes scroll { from{transform:translateX(0)} to{transform:translateX(-100%)} }
-#liveIndicator { display:inline-block; width:14px; height:14px; border-radius:50%; background:gray; margin-left:5px; }
-#recordedVideos { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px; margin-top:15px; }
-.video-card { background:#00000099; padding:10px; border-radius:8px; }
-</style>
+<title>Auth Test</title>
 </head>
-
 <body>
 
-<!-- LOGIN -->
-<div id="loginBox">
-  <h2>Owner Login</h2>
-  <input type="email" id="email" placeholder="Email"><br>
-  <input type="password" id="password" placeholder="Password"><br>
-  <button onclick="login()">Login</button>
-  <button onclick="resetPassword()">Forgot Password</button>
-</div>
+<h2>Firebase Login Test</h2>
 
-<!-- OWNER PANEL -->
-<div id="ownerPanel">
-  <h2>Owner Dashboard</h2>
-  <button onclick="auth.signOut()">Logout</button>
-  <p>Live Status: <span id="liveIndicator"></span></p>
-  <button onclick="toggleLive()">Start / Stop Live</button>
+<input type="email" id="email" placeholder="Email"><br><br>
+<input type="password" id="password" placeholder="Password"><br><br>
+<button onclick="login()">Login</button>
 
-  <div class="video-wrapper">
-    <div class="title-bar"><div id="programTitle">Program Title</div></div>
-    <img id="bgImage" class="bg-media">
-    <video id="bgVideo" class="bg-media" autoplay muted loop></video>
-    <video id="liveVideo" autoplay playsinline></video>
-  </div>
+<p id="status">Not logged in</p>
 
-  <h3>Program Title</h3>
-  <input id="titleInput" placeholder="Enter program title">
-  <button onclick="setTitle()">Update Title</button>
-
-  <h3>Background Image / Video</h3>
-  <input type="file" accept="image/*,video/*" onchange="uploadBackground(this)">
-  <button onclick="clearBackground()">Remove Background</button>
-
-  <h3>Recorded Videos</h3>
-  <input type="file" accept="video/*" onchange="uploadVideo(this)">
-  <div id="recordedVideos"></div>
-
-  <h3>Change Password</h3>
-  <input type="password" id="newPassword" placeholder="New password">
-  <button onclick="changePassword()">Change</button>
-</div>
-
-<!-- FIREBASE -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
 <script>
-/* FIREBASE CONFIG */
 const firebaseConfig = {
-    apiKey: "AIzaSyDyIloGwy7UzZUAqodgZNvNCiBou02RbGQ",
-    authDomain: "livestream-trial.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-    projectId: "livestream-trial",
-    storageBucket: "livestream-trial.firebasestorage.app",
-    messagingSenderId: "448193920796",
-    appId: "1:448193920796:web:019cf2b7295e0e7d7c04d9"
-  };
-  console.log("Apps:", firebase.apps.length);
+  apiKey: "AIzaSyDyIloGwy7UzZUAqodgZNvNCiBou02RbGQ",
+  authDomain: "livestream-trial.firebaseapp.com",
+  projectId: "livestream-trial"
+};
+
+firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
-const db = firebase.database();
-const storage = firebase.storage();
 
-/* AUTH */
-function login(){
+function login() {
   auth.signInWithEmailAndPassword(
-    email.value, password.value
-  ).catch(e=>alert(e.message));
+    email.value,
+    password.value
+  )
+  .catch(err => alert(err.message));
 }
 
-function resetPassword(){
-  if(!email.value) return alert("Enter email");
-  auth.sendPasswordResetEmail(email.value)
-    .then(()=>alert("Email sent"));
-}
-
-function changePassword(){
-  auth.currentUser.updatePassword(newPassword.value)
-    .then(()=>alert("Password changed"));
-}
-
-auth.onAuthStateChanged(user=>{
-  loginBox.style.display = user ? "none" : "block";
-  ownerPanel.style.display = user ? "block" : "none";
-});
-
-/* LIVE CAMERA */
-let stream=null;
-function toggleLive(){
-  if(!stream){
-    navigator.mediaDevices.getUserMedia({video:true,audio:true})
-    .then(s=>{
-      stream=s;
-      liveVideo.srcObject=s;
-      liveIndicator.style.background="red";
-    }).catch(e=>alert(e.message));
-  }else{
-    stream.getTracks().forEach(t=>t.stop());
-    stream=null;
-    liveVideo.srcObject=null;
-    liveIndicator.style.background="gray";
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById("status").textContent =
+      "Logged in as: " + user.email;
+  } else {
+    document.getElementById("status").textContent =
+      "Not logged in";
   }
-}
-
-/* TITLE */
-function setTitle(){
-  db.ref("programTitle").set(titleInput.value);
-}
-db.ref("programTitle").on("value",s=>{
-  if(s.val()) programTitle.textContent=s.val();
-});
-
-/* BACKGROUND */
-function uploadBackground(input){
-  const file=input.files[0];
-  if(!file) return;
-  const ref=storage.ref("background/current");
-  ref.put(file).then(()=>ref.getDownloadURL().then(url=>{
-    db.ref("background").set({
-      url:url,
-      type:file.type.startsWith("video")?"video":"image"
-    });
-  }));
-}
-function clearBackground(){ db.ref("background").remove(); }
-
-db.ref("background").on("value",s=>{
-  bgImage.style.display=bgVideo.style.display="none";
-  if(!s.val()) return;
-  if(s.val().type==="image"){ bgImage.src=s.val().url; bgImage.style.display="block"; }
-  else{ bgVideo.src=s.val().url; bgVideo.style.display="block"; }
-});
-
-/* RECORDED VIDEOS */
-function uploadVideo(input){
-  const file=input.files[0];
-  if(!file) return;
-  const id=Date.now();
-  storage.ref("videos/"+id).put(file)
-  .then(()=>storage.ref("videos/"+id).getDownloadURL())
-  .then(url=>db.ref("videos/"+id).set({name:file.name,url:url}));
-}
-
-db.ref("videos").on("child_added",s=>{
-  const d=s.val();
-  const card=document.createElement("div");
-  card.className="video-card";
-  card.innerHTML=`<h4>${d.name}</h4>
-  <video src="${d.url}" controls width="100%"></video>`;
-  recordedVideos.appendChild(card);
 });
 </script>
 
 </body>
 </html>
-
-
