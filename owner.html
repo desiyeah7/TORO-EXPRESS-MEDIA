@@ -2,50 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Auth Test</title>
+<title>Camera Test</title>
+
+<style>
+body { background:#111; color:white; font-family:Arial; text-align:center; }
+video { width:70%; max-width:600px; border:2px solid #4caf50; border-radius:10px; margin-top:15px; }
+button { padding:10px 20px; margin:10px; font-size:16px; }
+#indicator { width:15px; height:15px; background:gray; border-radius:50%; display:inline-block; }
+</style>
 </head>
 <body>
 
-<h2>Firebase Login Test</h2>
+<h2>Camera & Microphone Test</h2>
 
-<input type="email" id="email" placeholder="Email"><br><br>
-<input type="password" id="password" placeholder="Password"><br><br>
-<button onclick="login()">Login</button>
+<button onclick="start()">Start Camera</button>
+<button onclick="stop()">Stop Camera</button>
 
-<p id="status">Not logged in</p>
+<p>Live: <span id="indicator"></span></p>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<video id="preview" autoplay playsinline></video>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDyIloGwy7UzZUAqodgZNvNCiBou02RbGQ",
-  authDomain: "livestream-trial.firebaseapp.com",
-  projectId: "livestream-trial"
-};
+let stream = null;
 
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-
-function login() {
-  auth.signInWithEmailAndPassword(
-    email.value,
-    password.value
-  )
+function start(){
+  navigator.mediaDevices.getUserMedia({ video:true, audio:true })
+  .then(s=>{
+    stream = s;
+    preview.srcObject = s;
+    indicator.style.background = "red";
+  })
   .catch(err => alert(err.message));
 }
 
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById("status").textContent =
-      "Logged in as: " + user.email;
-  } else {
-    document.getElementById("status").textContent =
-      "Not logged in";
+function stop(){
+  if(stream){
+    stream.getTracks().forEach(t=>t.stop());
+    stream = null;
+    preview.srcObject = null;
+    indicator.style.background = "gray";
   }
-});
+}
 </script>
 
 </body>
