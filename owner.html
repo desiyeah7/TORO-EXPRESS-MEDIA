@@ -74,14 +74,14 @@ button { background:#4caf50; color:#fff; cursor:pointer; }
 <script>
 /* FIREBASE CONFIG */
 const firebaseConfig = {
-  apiKey: "AIzaSyDyIloGwy7UzZUAqodgZNvNCiBou02RbGQ",
-  authDomain: "livestream-trial.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "livestream-trial",
-  storageBucket: "livestream-trial.firebasestorage.app",
-  messagingSenderId: "448193920796",
-  appId: "1:448193920796:web:019cf2b7295e0e7d7c04d9"
-};
+    apiKey: "AIzaSyDyIloGwy7UzZUAqodgZNvNCiBou02RbGQ",
+    authDomain: "livestream-trial.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+    projectId: "livestream-trial",
+    storageBucket: "livestream-trial.firebasestorage.app",
+    messagingSenderId: "448193920796",
+    appId: "1:448193920796:web:019cf2b7295e0e7d7c04d9"
+  };
 
 const auth = firebase.auth();
 const db = firebase.database();
@@ -179,3 +179,4 @@ db.ref("videos").on("child_added",s=>{
 
 </body>
 </html>
+
