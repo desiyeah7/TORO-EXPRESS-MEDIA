@@ -65,37 +65,16 @@ z-index:1000;}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
-<script>
-//Import the functionsyou need from the SDKs you need
-
-import {initializedApp} from "firebase/app";
-//TODO:Add SDKs for Firebase products that you want to use
-//https://firebase.google.com/docs/web/setup#available-libraries
-
-//Your web app's Firebaseconfiguration
-const firebaseConfig = {
-apiKey:"AIzaSyDyIloGwy7UzZUAqodgZNvNCiBou02RbGQ",
-authDiomain: "livestream-trial.firebaseapp.com",
-projectId: "livestream-trial",
-storageBucket: "livestream-trial.firebasestorage.app",
-messagingSenderId: "448193920796",
-appId: "1:448193920796:web:019cf2b7295e0e7d7c04d9"
-};
-
-//Initialize Firebase
-const app = initializedApp(firebaseConfig);
-</script>
 <script>
   // Firebase init
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    apiKey: "AIzaSyDyIloGwy7UzZUAqodgZNvNCiBou02RbGQ",
+    authDomain: "livestream-trial.firebaseapp.com",
     databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "XXXX",
-    appId: "XXXX"
+    projectId: "livestream-trial",
+    storageBucket: "livestream-trial.firebasestorage.app",
+    messagingSenderId: "448193920796",
+    appId: "1:448193920796:web:019cf2b7295e0e7d7c04d9"
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
@@ -170,3 +149,4 @@ esle{ liveIndicator.style.display = 'none';//hide when offline
 </script>
 </body>
 </html>
+
