@@ -82,6 +82,7 @@ const firebaseConfig = {
     messagingSenderId: "448193920796",
     appId: "1:448193920796:web:019cf2b7295e0e7d7c04d9"
   };
+  console.log("Apps:", firebase.apps.length);
 
 const auth = firebase.auth();
 const db = firebase.database();
@@ -179,4 +180,5 @@ db.ref("videos").on("child_added",s=>{
 
 </body>
 </html>
+
 
